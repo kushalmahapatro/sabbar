@@ -213,8 +213,9 @@ class _RoutePreviewMapViewState extends State<RoutePreviewMapView> {
         Polyline(
           polylineId: PolylineId(id),
           points: state.polyline,
-          color:
-              id == 'route' ? context.colors.primary : const Color(0xff598527),
+          color: id == 'route'
+              ? context.colors.primary
+              : const Color(0xff598527).withOpacity(0.6),
           width: 6,
         ),
       );
@@ -224,8 +225,9 @@ class _RoutePreviewMapViewState extends State<RoutePreviewMapView> {
         Polyline(
           polylineId: PolylineId(id),
           points: state.polyline,
-          color:
-              id == 'route' ? context.colors.primary : const Color(0xff598527),
+          color: id == 'route'
+              ? context.colors.primary
+              : const Color(0xff598527).withOpacity(0.6),
           width: 6,
         ),
       );

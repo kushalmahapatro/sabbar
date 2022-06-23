@@ -167,7 +167,7 @@ class BottomWidget extends StatelessWidget {
                             style: context.titleLarge,
                           ),
                           SizedBox(
-                            width: context.size!.width * 0.7,
+                            width: 300,
                             child: Text(
                               t.join(', '),
                               maxLines: 3,
