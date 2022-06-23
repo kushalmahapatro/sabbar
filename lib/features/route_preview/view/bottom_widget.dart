@@ -1,6 +1,5 @@
 import 'package:sabbar/features/route_preview/route_preview.dart';
 import 'package:sabbar/sabbar.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 import 'package:intl/intl.dart';
 
 class BottomWidget extends StatelessWidget {
@@ -38,7 +37,7 @@ class BottomWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          BlocBuilder<TripBloc, FetchResult>(builder: ((context, state) {
+          BlocBuilder<TripBloc, FetchResult>(builder: ((ctx, state) {
             if (state is TripChangeResult) {
               status = state.status;
               if (status == TripStatus.started) {
@@ -167,9 +166,12 @@ class BottomWidget extends StatelessWidget {
                             marker.infoWindow.title ?? '',
                             style: context.titleLarge,
                           ),
-                          Text(
-                            t.join(','),
-                            maxLines: 3,
+                          SizedBox(
+                            width: context.size!.width * 0.7,
+                            child: Text(
+                              t.join(', '),
+                              maxLines: 3,
+                            ),
                           ),
                         ],
                       )

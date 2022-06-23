@@ -28,9 +28,9 @@ class RoutePreviewScreen extends StatelessWidget {
           ),
 
           DraggableScrollableSheet(
-              initialChildSize: 0.4,
-              minChildSize: 0.4,
-              maxChildSize: 0.4,
+              initialChildSize: 0.42,
+              minChildSize: 0.42,
+              maxChildSize: 0.42,
               builder: (ctx, controller) {
                 return Material(
                   elevation: 5,
