@@ -11,13 +11,6 @@ Future<PlaceDetail> getPlaceDetailFromId(String placeId) async {
   var response = await restService.get('/maps/api/place/details/json',
       parameters: queryParameters);
 
-  // var result = await HttpClient()
-  //     .getUrl(Uri.https('maps.googleapis.com', '/maps/api/place/details/json',
-  //         queryParameters))
-  //     .then((req) => req.close())
-  //     .then((res) => res.transform(utf8.decoder).join())
-  //     .then((str) => json.decode(str));
-
   if (response.error == ScreenError.noError && response.response != null) {
     if (response.response['status'] == 'OK') {
       // build result

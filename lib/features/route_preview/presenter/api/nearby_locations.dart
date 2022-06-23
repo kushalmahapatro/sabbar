@@ -18,13 +18,6 @@ Future<List<Marker>> getNearbyLocation(
   var response = await restService.get('/maps/api/place/nearbysearch/json',
       parameters: queryParameters);
 
-  // var response = await HttpClient()
-  //     .getUrl(Uri.https('maps.googleapis.com',
-  //         '/maps/api/place/nearbysearch/json', queryParameters))
-  //     .then((req) => req.close())
-  //     .then((res) => res.transform(utf8.decoder).join())
-  //     .then((str) => json.decode(str));
-
   if (response.error == ScreenError.noError && response.response != null) {
     BitmapDescriptor truck = BitmapDescriptor.fromBytes(
         await getBytesFromAsset('assets/images/truck.png', 85));

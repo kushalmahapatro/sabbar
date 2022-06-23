@@ -1,7 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:sabbar/sabbar.dart';
 import 'package:sabbar/rest_services/app_exceptions.dart';
-import 'package:sabbar/rest_services/dio_instance.dart';
 
 enum ScreenError { noError, internet, unknown }
 
@@ -12,11 +11,6 @@ class RestService {
 
     return connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi;
-  }
-
-  Future<Dio> getDio([Map<String, dynamic>? headers]) async {
-    final Dio dioClient = await DioInstance().getDioInstance(headers);
-    return dioClient;
   }
 
   Future<RestServiceResponse> get(String url,
@@ -32,11 +26,20 @@ class RestService {
     } else {
       if (await _checkConnectivity()) {
         try {
-          final Dio dioClient = await getDio(headers);
-          final Response<dynamic> response = await dioClient
-              .getUri<dynamic>(Uri(path: url, queryParameters: parameters));
-          responseJson = _returnResponse(response, url,
-              headers: await DioInstance().getGlobalHeaders(headers));
+          HttpClient httpClient = HttpClient();
+
+          var request = await httpClient
+              .getUrl(Uri.https('maps.googleapis.com', url, parameters));
+
+          headers?.forEach((key, value) {
+            request.headers.add(key, value);
+          });
+          // request.add(utf8.encode(bodyString));
+          var response = await request.close();
+          httpClient.close();
+
+          responseJson =
+              await _returnResponse(response, url, headers: request.headers);
         } on SocketException {
           socketConnectionError();
           error = ScreenError.internet;
@@ -68,7 +71,6 @@ class RestService {
     dynamic body, {
     Map<String, dynamic>? headers,
     String mockJsonName = '',
-    bool Function(int?)? validateStatus,
   }) async {
     dynamic responseJson;
     Map<String, List<String>> responseHeader = const <String, List<String>>{};
@@ -80,22 +82,29 @@ class RestService {
     } else {
       if (await _checkConnectivity()) {
         try {
-          final Dio dioClient = await getDio(headers);
-          Options? requestOptions;
-          if (validateStatus != null) {
-            requestOptions = Options(
-              followRedirects: false,
-              validateStatus: validateStatus,
-            );
-          }
-          final Response<dynamic> response = await dioClient.postUri<dynamic>(
-              Uri.parse(url),
-              data: body,
-              options: requestOptions);
-          responseHeader = response.headers.map;
-          responseJson = _returnResponse(response, url,
-              body: body,
-              headers: await DioInstance().getGlobalHeaders(headers));
+          HttpClient httpClient = HttpClient();
+
+          var request =
+              await httpClient.postUrl(Uri.https('maps.googleapis.com', url));
+
+          headers?.forEach((key, value) {
+            request.headers.add(key, value);
+          });
+          request.add(utf8.encode(jsonEncode(body)));
+          var response = await request.close();
+          httpClient.close();
+
+          responseJson =
+              await _returnResponse(response, url, headers: request.headers);
+
+          // final Response<dynamic> response = await dioClient.postUri<dynamic>(
+          //     Uri.parse(url),
+          //     data: body,
+          //     options: requestOptions);
+          // responseHeader = response.headers.map;
+          // responseJson = _returnResponse(response, url,
+          //     body: body,
+          //     headers: await DioInstance().getGlobalHeaders(headers));
         } on SocketException {
           socketConnectionError();
           error = ScreenError.internet;
@@ -129,12 +138,26 @@ class RestService {
     } else {
       if (await _checkConnectivity()) {
         try {
-          final Dio dioClient = await getDio(headers);
-          final Response<dynamic> response =
-              await dioClient.putUri<dynamic>(Uri.parse(url), data: body);
-          responseJson = _returnResponse(response, url,
-              body: body,
-              headers: await DioInstance().getGlobalHeaders(headers));
+          HttpClient httpClient = HttpClient();
+
+          var request =
+              await httpClient.putUrl(Uri.https('maps.googleapis.com', url));
+
+          headers?.forEach((key, value) {
+            request.headers.add(key, value);
+          });
+          request.add(utf8.encode(jsonEncode(body)));
+          var response = await request.close();
+          httpClient.close();
+
+          responseJson =
+              await _returnResponse(response, url, headers: request.headers);
+          // final Dio dioClient = await getDio(headers);
+          // final Response<dynamic> response =
+          //     await dioClient.putUri<dynamic>(Uri.parse(url), data: body);
+          // responseJson = _returnResponse(response, url,
+          //     body: body,
+          //     headers: await DioInstance().getGlobalHeaders(headers));
         } on SocketException {
           socketConnectionError();
           error = ScreenError.internet;
@@ -169,11 +192,25 @@ class RestService {
     } else {
       if (await _checkConnectivity()) {
         try {
-          final Dio dioClient = await getDio(headers);
-          final Response<dynamic> response =
-              await dioClient.deleteUri<dynamic>(Uri.parse(url), data: body);
-          responseJson = _returnResponse(response, url,
-              headers: await DioInstance().getGlobalHeaders(headers));
+          HttpClient httpClient = HttpClient();
+
+          var request =
+              await httpClient.deleteUrl(Uri.https('maps.googleapis.com', url));
+
+          headers?.forEach((key, value) {
+            request.headers.add(key, value);
+          });
+          request.add(utf8.encode(jsonEncode(body)));
+          var response = await request.close();
+          httpClient.close();
+
+          responseJson =
+              await _returnResponse(response, url, headers: request.headers);
+          // final Dio dioClient = await getDio(headers);
+          // final Response<dynamic> response =
+          //     await dioClient.deleteUri<dynamic>(Uri.parse(url), data: body);
+          // responseJson = _returnResponse(response, url,
+          //     headers: await DioInstance().getGlobalHeaders(headers));
         } on SocketException {
           socketConnectionError();
           error = ScreenError.internet;
@@ -197,10 +234,18 @@ class RestService {
   ) async {
     dynamic responseJson;
     try {
-      final Dio dioClient = await getDio();
-      final Response<dynamic> response =
-          await dioClient.downloadUri(Uri.parse(url), savePath);
-      responseJson = _returnResponse(response, url, isDownloadCall: true);
+      HttpClient httpClient = HttpClient();
+
+      var request = await httpClient.getUrl(Uri.parse(url));
+
+      final response = await request.close();
+      response.pipe(File(savePath).openWrite());
+
+      responseJson = await _returnResponse(response, url, isDownloadCall: true);
+      // final Dio dioClient = await getDio();
+      // final Response<dynamic> response =
+      //     await dioClient.downloadUri(Uri.parse(url), savePath);
+      // responseJson = _returnResponse(response, url, isDownloadCall: true);
     } on SocketException {
       socketConnectionError();
     } on Exception catch (e) {
@@ -212,25 +257,27 @@ class RestService {
 }
 
 dynamic _returnResponse(
-  Response<dynamic> response,
+  HttpClientResponse response,
   String url, {
   dynamic body,
-  Map<String, dynamic>? headers,
+  HttpHeaders? headers,
   bool isDownloadCall = false,
-}) {
+}) async {
+  var reply = await response.transform(utf8.decoder).join();
+
   switch (response.statusCode) {
     case 200:
       if (!isDownloadCall) {
-        if (response.data is Map || response.data is List) {
-          final dynamic responseJson = response.data;
+        if (reply is Map || reply is List) {
+          final dynamic responseJson = reply;
 
           return responseJson;
         } else {
           try {
-            final dynamic responseJson = jsonDecode(response.data.toString());
+            final dynamic responseJson = jsonDecode(reply);
             return responseJson;
           } on Exception catch (_) {
-            final dynamic responseJson = response.data?.toString();
+            final dynamic responseJson = reply;
             return responseJson;
           }
         }
@@ -238,15 +285,15 @@ dynamic _returnResponse(
         return true;
       }
     case 400:
-      badRequestException(response.data.toString());
+      badRequestException(reply);
       break;
     case 401:
     case 403:
-      unauthorisedException(response.data.toString());
+      unauthorisedException(reply);
       break;
     case 500:
     default:
-      fetchDataException(response.data.toString());
+      fetchDataException(reply);
       break;
   }
 }
