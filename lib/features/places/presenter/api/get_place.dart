@@ -8,26 +8,29 @@ Future<List<String>> getPlace(
     'key': 'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE',
     'sessiontoken': sessionToken
   };
-  var response = await HttpClient()
-      .getUrl(Uri.https(
-          'maps.googleapis.com', '/maps/api/geocode/json', queryParameters))
-      .then((req) => req.close())
-      .then((res) => res.transform(utf8.decoder).join())
-      .then((str) => json.decode(str));
+  var response = await restService.get('/maps/api/geocode/json',
+      parameters: queryParameters);
 
-  if (response != null) {
-    if (response['status'] == 'OK') {
+  // await HttpClient()
+  //     .getUrl(Uri.https(
+  //         'maps.googleapis.com', '/maps/api/geocode/json', queryParameters))
+  //     .then((req) => req.close())
+  //     .then((res) => res.transform(utf8.decoder).join())
+  //     .then((str) => json.decode(str));
+
+  if (response.error == ScreenError.noError && response.response != null) {
+    if (response.response['status'] == 'OK') {
       List<String> address = [];
-      for (var element in ((response['results'] as List)
+      for (var element in ((response.response['results'] as List)
           .first['address_components'] as List)) {
         address.add(element['long_name']);
       }
       return address;
     }
-    if (response['status'] == 'ZERO_RESULTS') {
+    if (response.response['status'] == 'ZERO_RESULTS') {
       return [];
     }
-    throw Exception(response['error_message']);
+    throw Exception(response.response['error_message']);
   } else {
     throw Exception('Failed to fetch suggestion');
   }

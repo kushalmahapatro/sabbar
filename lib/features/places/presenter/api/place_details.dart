@@ -8,24 +8,29 @@ Future<PlaceDetail> getPlaceDetailFromId(String placeId) async {
     'key': 'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE',
     'sessiontoken': 'sessionToken'
   };
-  var result = await HttpClient()
-      .getUrl(Uri.https('maps.googleapis.com', '/maps/api/place/details/json',
-          queryParameters))
-      .then((req) => req.close())
-      .then((res) => res.transform(utf8.decoder).join())
-      .then((str) => json.decode(str));
+  var response = await restService.get('/maps/api/place/details/json',
+      parameters: queryParameters);
 
-  if (result != null) {
-    if (result['status'] == 'OK') {
+  // var result = await HttpClient()
+  //     .getUrl(Uri.https('maps.googleapis.com', '/maps/api/place/details/json',
+  //         queryParameters))
+  //     .then((req) => req.close())
+  //     .then((res) => res.transform(utf8.decoder).join())
+  //     .then((str) => json.decode(str));
+
+  if (response.error == ScreenError.noError && response.response != null) {
+    if (response.response['status'] == 'OK') {
       // build result
       final place = PlaceDetail();
-      place.address = result['result']['formatted_address'];
-      place.latitude = result['result']['geometry']['location']['lat'];
-      place.longitude = result['result']['geometry']['location']['lng'];
-      place.name = result['result']['geometry']['name'];
+      place.address = response.response['result']['formatted_address'];
+      place.latitude =
+          response.response['result']['geometry']['location']['lat'];
+      place.longitude =
+          response.response['result']['geometry']['location']['lng'];
+      place.name = response.response['result']['geometry']['name'];
       return place;
     }
-    throw Exception(result['error_message']);
+    throw Exception(response.response['error_message']);
   } else {
     throw Exception('Failed to fetch suggestion');
   }

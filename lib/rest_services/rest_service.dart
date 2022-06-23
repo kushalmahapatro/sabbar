@@ -33,16 +33,6 @@ class RestService {
       if (await _checkConnectivity()) {
         try {
           final Dio dioClient = await getDio(headers);
-          if (parameters != null &&
-              parameters.isNotEmpty &&
-              !parameters.containsKey("client_id")) {
-            parameters['client_id'] = "MjcxMzU5NjZ8MTY1MzQ3NjY0NS4xMTMzNDA5";
-          } else {
-            Map<String, String> data = {
-              'client_id': 'MjcxMzU5NjZ8MTY1MzQ3NjY0NS4xMTMzNDA5'
-            };
-            parameters = data;
-          }
           final Response<dynamic> response = await dioClient
               .getUri<dynamic>(Uri(path: url, queryParameters: parameters));
           responseJson = _returnResponse(response, url,

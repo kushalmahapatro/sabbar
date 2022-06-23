@@ -15,32 +15,35 @@ Future<List<Marker>> getNearbyLocation(
     'key': 'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE',
     'sessiontoken': session
   };
-  var response = await HttpClient()
-      .getUrl(Uri.https('maps.googleapis.com',
-          '/maps/api/place/nearbysearch/json', queryParameters))
-      .then((req) => req.close())
-      .then((res) => res.transform(utf8.decoder).join())
-      .then((str) => json.decode(str));
+  var response = await restService.get('/maps/api/place/nearbysearch/json',
+      parameters: queryParameters);
 
-  if (response != null) {
+  // var response = await HttpClient()
+  //     .getUrl(Uri.https('maps.googleapis.com',
+  //         '/maps/api/place/nearbysearch/json', queryParameters))
+  //     .then((req) => req.close())
+  //     .then((res) => res.transform(utf8.decoder).join())
+  //     .then((str) => json.decode(str));
+
+  if (response.error == ScreenError.noError && response.response != null) {
     BitmapDescriptor truck = BitmapDescriptor.fromBytes(
         await getBytesFromAsset('assets/images/truck.png', 85));
 
-    if (response['status'] == 'OK') {
+    if (response.response['status'] == 'OK') {
       List<Marker> address = [];
       for (int i = 0;
           i <
-              ((response['results'] as List).length > 5
+              ((response.response['results'] as List).length > 5
                   ? 5
-                  : (response['results'] as List).length);
+                  : (response.response['results'] as List).length);
           i++) {
-        if ((response['results'][i] as Map).containsKey('geometry')) {
-          double lat = double.tryParse(response['results'][i]['geometry']
-                      ['location']['lat']
+        if ((response.response['results'][i] as Map).containsKey('geometry')) {
+          double lat = double.tryParse(response.response['results'][i]
+                      ['geometry']['location']['lat']
                   .toString()) ??
               0;
-          double lng = double.tryParse(response['results'][i]['geometry']
-                      ['location']['lng']
+          double lng = double.tryParse(response.response['results'][i]
+                      ['geometry']['location']['lng']
                   .toString()) ??
               0;
           address.add(RippleMarker(
@@ -56,10 +59,10 @@ Future<List<Marker>> getNearbyLocation(
       }
       return address;
     }
-    if (response['status'] == 'ZERO_RESULTS') {
+    if (response.response['status'] == 'ZERO_RESULTS') {
       return [];
     }
-    throw Exception(response['error_message']);
+    throw Exception(response.response['error_message']);
   } else {
     throw Exception('Failed to fetch suggestion');
   }

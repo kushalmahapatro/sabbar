@@ -1,4 +1,3 @@
-import 'package:dio/adapter.dart';
 import 'package:sabbar/sabbar.dart';
 
 class DioInstance {
@@ -18,39 +17,10 @@ class DioInstance {
 
   Future<Dio> getDioInstance([Map<String, dynamic>? headers]) async {
     dio.options = BaseOptions(
-        baseUrl: "https://api.seatgeek.com/2",
+        baseUrl: "https://maps.googleapis.com",
         headers: await getGlobalHeaders(headers),
         connectTimeout: 30000);
     return dio;
-  }
-
-  Future<List<int>> getKeyBytes() async {
-    return (await rootBundle.load('assets/keys/stylishop.key'))
-        .buffer
-        .asInt8List();
-  }
-
-  Future<List<int>> getCertificateChainBytes() async {
-    return (await rootBundle.load('assets/keys/stylishop.pem'))
-        .buffer
-        .asInt8List();
-  }
-
-  Future<void> addSecurityKeys() async {
-    final List<int> certificateChainBytes = await getCertificateChainBytes();
-    final List<int> keyBytes = await getKeyBytes();
-
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      final SecurityContext sc = SecurityContext(withTrustedRoots: true)
-        ..useCertificateChainBytes(certificateChainBytes)
-        ..usePrivateKeyBytes(keyBytes);
-      HttpClient(context: sc).badCertificateCallback =
-          (X509Certificate cert, String host, int port) {
-        return true;
-      };
-      return client;
-    };
   }
 
   Future<Map<String, dynamic>> getGlobalHeaders(
