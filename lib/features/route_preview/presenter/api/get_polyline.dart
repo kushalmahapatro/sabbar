@@ -6,7 +6,7 @@ Future<List<LatLng>> getPolyPoints(
   List<LatLng> ltln = [];
   PolylinePoints polylinePoints = PolylinePoints();
   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-    'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE', // Your Google Map Key
+    'GOOGLE_MAP_KEY', // Your Google Map Key
     PointLatLng(pickupLocation.latitude, pickupLocation.longitude),
     PointLatLng(dropoffLocation.latitude, dropoffLocation.longitude),
   );

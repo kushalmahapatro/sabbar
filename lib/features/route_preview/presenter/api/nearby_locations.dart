@@ -12,7 +12,7 @@ Future<List<Marker>> getNearbyLocation(
   final queryParameters = {
     'location': '${lat.toString()},${long.toString()}',
     'radius': '1500',
-    'key': 'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE',
+    'key': 'GOOGLE_MAP_KEY',
     'sessiontoken': session
   };
   var response = await restService.get('/maps/api/place/nearbysearch/json',

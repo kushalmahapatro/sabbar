@@ -5,7 +5,7 @@ Future<List<String>> getPlace(
   final queryParameters = {
     'latlng': '$lat,$long',
     'sensor': 'true',
-    'key': 'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE',
+    'key': 'GOOGLE_MAP_KEY',
     'sessiontoken': sessionToken
   };
   var response = await restService.get('/maps/api/geocode/json',

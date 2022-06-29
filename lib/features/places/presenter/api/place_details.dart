@@ -5,7 +5,7 @@ Future<PlaceDetail> getPlaceDetailFromId(String placeId) async {
   final queryParameters = {
     'place_id': placeId,
     'fields': 'formatted_address,name,geometry/location',
-    'key': 'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE',
+    'key': 'GOOGLE_MAP_KEY',
     'sessiontoken': 'sessionToken'
   };
   var response = await restService.get('/maps/api/place/details/json',

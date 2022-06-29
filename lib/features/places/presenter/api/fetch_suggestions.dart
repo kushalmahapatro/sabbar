@@ -6,7 +6,7 @@ Future<List<Suggestions>> fetchSuggestions(
   final queryParameters = {
     'input': input,
     'components': 'country:ae',
-    'key': 'AIzaSyBtL1g5Hql-UGO3g5n-iuM7RAJaizNDWPE',
+    'key': 'GOOGLE_MAP_KEY',
     'sessiontoken': sessionToken
   };
   var response = await restService.get('/maps/api/place/autocomplete/json',
